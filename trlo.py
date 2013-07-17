@@ -19,26 +19,18 @@ class TrelloSession(OAuth1Session):
             url = 'https://trello.com/1/' + url.lstrip('/')
         return super(TrelloSession, self).request(method, url, *args, **kwargs)
 
-def authorize():
+def authorize(client_key, client_secret, credfile=CONFIG_FILE, app='trlo.py',
+              expiration='never', scope='read,write'):
     """
-    Authorize with Trello, saving creds to ~/.trlo
+    Authorize with Trello, saving creds to `credfile`.
     """
-    parser = argparse.ArgumentParser("Authorize with Trello")
-    parser.add_argument('--key', required=True,
-        help="Your Trello key, the first value at https://trello.com/1/appKey/generate")
-    parser.add_argument('--secret', required=True,
-        help="Your Trello secret, the second value at https://trello.com/1/appKey/generate")
-    args = parser.parse_args()
-
-    # OAuth? More like FFFUUUauth amirite?
-
     # 1. Obtain the request token.
-    oauth = OAuth1Session(args.key, client_secret=args.secret)
+    oauth = OAuth1Session(client_key, client_secret=client_secret)
     request_token = oauth.fetch_request_token(OAUTH_REQUEST_TOKEN_URL)
 
     # 2. Authorize the user (in the browser).
     authorization_url = oauth.authorization_url(OAUTH_BASE_AUTHORIZE_URL,
-        name='trlo.py', expiration='never', scope='read,write')
+        name=app, expiration=expiration, scope=scope)
     print("Please visit the following URL to authorize this app:")
     print(authorization_url)
     print('')
@@ -46,7 +38,7 @@ def authorize():
     verifier = raw_input("Trello's token: ").strip()
 
     # 3. Obtain the access token
-    oauth = OAuth1Session(args.key, client_secret=args.secret,
+    oauth = OAuth1Session(client_key, client_secret=client_secret,
         resource_owner_key=request_token['oauth_token'],
         resource_owner_secret=request_token['oauth_token_secret'],
         verifier=verifier)
@@ -55,13 +47,19 @@ def authorize():
     # Save all our creds to ~/.trlo so we can get at 'em later.
     # The names are specially chosen so we can do OAuth1Session(**creds)
     creds = {
-        'client_key': args.key,
-        'client_secret': args.secret,
+        'client_key': client_key,
+        'client_secret': client_secret,
         'resource_owner_key': access_token['oauth_token'],
         'resource_owner_secret': access_token['oauth_token_secret'],
     }
-    with open(CONFIG_FILE, 'w') as fp:
+    with open(credfile, 'w') as fp:
         json.dump(creds, fp)
 
 if __name__ == '__main__':
-    authorize()
+    parser = argparse.ArgumentParser("Authorize with Trello")
+    parser.add_argument('--key', required=True,
+        help="Your Trello key, the first value at https://trello.com/1/appKey/generate")
+    parser.add_argument('--secret', required=True,
+        help="Your Trello secret, the second value at https://trello.com/1/appKey/generate")
+    args = parser.parse_args()
+    authorize(args.key, args.secret)

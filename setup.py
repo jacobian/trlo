@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name = "trlo",
     description = "A minimalist Trello API client.",
-    version = "1.0",
+    version = "1.1",
     author = "Jacob Kaplan-Moss",
     author_email = "jacob@jacobian.org",
     url = "http://github.com/jacobian/trlo",
