@@ -35,7 +35,13 @@ def authorize(client_key, client_secret, credfile=CONFIG_FILE, app='trlo.py',
     print(authorization_url)
     print('')
     print("Once you've authorized, copy and paste the token Trello gives you below.")
-    verifier = raw_input("Trello's token: ").strip()
+    # Py3K backwards-compatibility shim
+    global input
+    try:
+        input = raw_input
+    except NameError:
+        pass
+    verifier = input("Trello's token: ").strip()
 
     # 3. Obtain the access token
     oauth = OAuth1Session(client_key, client_secret=client_secret,
