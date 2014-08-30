@@ -1,3 +1,5 @@
+### *[This repo is archived](https://github.com/jacobian-archive/about/blob/master/README.md), and will no longer be maintained.*
+
 # trlo
 
 This is `trlo`, a minimalist Trello API client. It's really nothing more than an ultra-thin layer on top of [requests](http://python-requests.org/) that helps with the OAuth flow. You'll still need to read [Trello's API docs](https://trello.com/docs/) and know how to use [requests](http://python-requests.org/), and generally be comfortable consuming REST resources by hand. If you want something more abstract with crazy new-fangled things like classes and such then look elsewhere.
